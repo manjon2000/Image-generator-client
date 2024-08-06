@@ -21,9 +21,9 @@ export const useApiTemplatesStore = defineStore('templates_api', {
                     }
                 })
                 const templateResult = await templated.json()
-                console.log(templateResult)
                 this.data = templateResult
                 this.loading = false;
+
             } catch (error) {
                 this.loading = false;
                 this.error = 'Error Request';

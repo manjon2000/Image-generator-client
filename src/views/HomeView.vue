@@ -10,7 +10,6 @@ const { loading, data, error } = storeToRefs(templatesStore)
 
 onMounted(() => {
   templatesStore.getTemplates()
-  console.log(data)
 })
 
 function getTemplateRoute(id: string): string {

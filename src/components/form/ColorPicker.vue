@@ -2,7 +2,6 @@
 import { ref, defineEmits, defineProps } from 'vue'
 
 defineProps<{
-  label: string
   placeholder: string
 }>()
 
@@ -27,6 +26,7 @@ const emitColor = () => {
     <input
       class="c-input-color-picker__input"
       type="color"
+      name="color-picker"
       v-model="colorPicker"
       @input="emitColor"
     />

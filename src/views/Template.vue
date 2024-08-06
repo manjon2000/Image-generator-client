@@ -1,25 +1,36 @@
 <script setup lang="ts">
+import { onMounted, ref, type Ref } from 'vue'
 import type { ITemplateResult } from '@/common/interfaces/templates.interface'
 import { useApiTemplatesStore } from '@/stores/templates.store'
-import { onMounted, ref, type Ref } from 'vue'
 import { useRoute } from 'vue-router'
 import ColorPicker from '@/components/form/ColorPicker.vue'
 import Modal from '@/components/Modal.vue'
+import Gallery from '@/components/Gallery.vue'
+interface ILayerSelected {
+  id: string
+  type: string
+}
 
 const templatesStore = useApiTemplatesStore()
 const route = useRoute()
 const result: Ref<ITemplateResult | undefined> = ref(undefined)
-const selectedColor = ref<string>('')
+const selectedLayer = ref<ILayerSelected | undefined>(undefined)
+const isOpenModal = ref<boolean>(false)
 onMounted(() => {
   result.value = templatesStore.findTemplate(route.params.id as string)
 })
 
-function handleColorUpdate(color: string) {
-  selectedColor.value = color
-}
-
 function formatString(value: string): string {
   return value.split('_').join(' ')
+}
+
+function onLayerSelected(id: string, type: string) {
+  selectedLayer.value = { id, type }
+  isOpenModal.value = true
+}
+
+function onCloseModalOutput(value: boolean) {
+  isOpenModal.value = value
 }
 </script>
 
@@ -41,6 +52,7 @@ function formatString(value: string): string {
                 'rounded-sm border-none': result.layers.length === 1,
                 'rounded-b-lg': index === result.layers.length - 1
               }"
+              @click="onLayerSelected(layer.id, layer.type)"
               class="bg-white p-4 border-[1px] border-gray-100 hover:cursor-pointer hover:bg-gray-100 transition-all"
             >
               <p class="text-black first-letter:uppercase">{{ formatString(layer.type) }}</p>
@@ -51,5 +63,17 @@ function formatString(value: string): string {
     </div>
   </div>
 
-  <Modal :isOpen="true" :title="'Editar Capa'" />
+  <Gallery />
+
+  <Modal
+    :isOpen="!!selectedLayer && isOpenModal"
+    :title="'Editar Capa'"
+    @update:isOpen="onCloseModalOutput"
+  >
+    <template v-slot>
+      <input type="text" name="color" />
+      <input type="text" name="image" />
+      <ColorPicker :placeholder="'ssss'" />
+    </template>
+  </Modal>
 </template>
